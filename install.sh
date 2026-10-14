@@ -270,6 +270,8 @@ install_flatpak() {
 
   say "Downloading the universal Flatpak bundle"
   download_asset "\.flatpak$" "$bundle" || die "no Flatpak bundle in release ${VERSION} (arch ${FLATPAK_ARCH})."
+  download_asset "SHA256SUMS" "${TMP_DIR}/SHA256SUMS" || true
+  verify_checksum "$bundle" "${TMP_DIR}/SHA256SUMS"
 
   say "Installing (this also pulls in the Flatpak runtime the first time)"
   flatpak install --user -y --noninteractive "$bundle"

@@ -22,7 +22,10 @@ extraMetadata:
 linux:
   executableName: yapper
   icon: build/icons
-  category: Network
+  # electron-builder writes this straight into the desktop file's Categories=,
+  # appending the trailing ";". Setting the full list here is what actually
+  # works; linux.desktop.entry.Categories gets overwritten by this field.
+  category: Network;InstantMessaging;Chat
   synopsis: Unofficial Yapper client
   description: >-
     Unofficial desktop client for Yapper (yapper.website).
@@ -33,7 +36,6 @@ linux:
       Name: Yapper
       GenericName: Chat Client
       Comment: Chat, servers, voice and screen sharing
-      Categories: Network;InstantMessaging;Chat;
       Keywords: chat;voice;discord;servers;yapper;
       StartupWMClass: yapper
       StartupNotify: "true"

@@ -1,7 +1,7 @@
 {
-  "name": "yapper-linux",
+  "name": "yapper",
   "productName": "Yapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Unofficial Linux desktop client for Yapper (yapper.website) - chat, servers, voice and screen sharing.",
   "license": "MIT",
   "author": {

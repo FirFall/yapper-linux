@@ -48,7 +48,7 @@ One file works on every distribution. [Download the latest `.flatpak`
 bundle](https://github.com/FirFall/yapper-linux/releases/latest), then:
 
 ```bash
-flatpak install --user ./Yapper-1.0.0-x86_64.flatpak
+flatpak install --user ./Yapper-*.flatpak
 flatpak run io.github.FirFall.Yapper
 ```
 
@@ -71,30 +71,30 @@ Flatpak will offer to install the runtime it needs the first time. It is about
 ### Debian, Ubuntu and Linux Mint
 
 ```bash
-sudo apt install ./Yapper-1.0.0-amd64.deb
+sudo apt install ./Yapper-*.deb
 ```
 
 ### Fedora, RHEL, openSUSE
 
 ```bash
-sudo dnf install ./Yapper-1.0.0-x86_64.rpm          # Fedora / RHEL
-sudo zypper install ./Yapper-1.0.0-x86_64.rpm       # openSUSE
+sudo dnf install ./Yapper-*.rpm          # Fedora / RHEL
+sudo zypper install ./Yapper-*.rpm       # openSUSE
 
 # Fedora Silverblue / Kinoite (immutable)
-sudo rpm-ostree install ./Yapper-1.0.0-x86_64.rpm   # then reboot
+sudo rpm-ostree install ./Yapper-*.rpm   # then reboot
 ```
 
 ### Arch, Manjaro, EndeavourOS
 
 ```bash
-sudo pacman -U ./Yapper-1.0.0-x64.pkg.tar.zst
+sudo pacman -U ./Yapper-*.pkg.tar.zst
 ```
 
 ### AppImage (no installation)
 
 ```bash
-chmod +x ./Yapper-1.0.0-x64.AppImage
-./Yapper-1.0.0-x64.AppImage
+chmod +x ./Yapper-*.AppImage
+./Yapper-*.AppImage
 ```
 
 ---
@@ -224,10 +224,10 @@ That builds the AppImage, then wraps it in a Flatpak and writes
 
 ### Icons
 
-The icon is generated from `build/icon.svg`:
+The icon is generated from `build/icon.svg` (`sharp` is a devDependency, so a
+normal `npm install` is enough):
 
 ```bash
-npm install --no-save sharp
 npm run icons
 ```
 

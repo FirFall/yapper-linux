@@ -149,6 +149,14 @@ jobs:
       - name: List what will be published
         run: ls -lh artifacts
 
+      - name: Checksums across every artifact
+        run: |
+          cd artifacts
+          rm -f SHA256SUMS.txt
+          sha256sum * > "$RUNNER_TEMP/SHA256SUMS.txt"
+          mv "$RUNNER_TEMP/SHA256SUMS.txt" SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
       - name: Work out the version
         id: version
         run: |

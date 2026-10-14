@@ -57,17 +57,21 @@ command -v node >/dev/null 2>&1 || die "node is not installed - it is needed to 
 # 1. Build the AppImage that the Flatpak wraps
 # ---------------------------------------------------------------------------
 
-APPIMAGE="$(ls -1 dist/Yapper-*-"$EB_ARCH".AppImage 2>/dev/null | head -n1 || true)"
+APPIMAGE="$(find dist -name 'Yapper-*.AppImage' -not -path '*/__*' 2>/dev/null | head -n1 || true)"
 
-if [ "${SKIP_APPIMAGE:-0}" = "1" ] && [ -n "$APPIMAGE" ]; then
-  log "Reusing existing $APPIMAGE"
+if [ "${SKIP_APPIMAGE:-0}" = "1" ]; then
+  if [ -n "$APPIMAGE" ] && [ -f "$APPIMAGE" ]; then
+    log "Reusing existing $APPIMAGE"
+  else
+    die "SKIP_APPIMAGE=1 but no AppImage found in dist/. Did the previous build step produce it?"
+  fi
 else
   log "Building the AppImage (npm run dist)"
   if [ ! -d node_modules ]; then
     npm install --no-audit --no-fund
   fi
   npx electron-builder --linux AppImage --"$EB_ARCH"
-  APPIMAGE="$(ls -1 dist/Yapper-*-"$EB_ARCH".AppImage 2>/dev/null | head -n1 || true)"
+  APPIMAGE="$(find dist -name 'Yapper-*.AppImage' -not -path '*/__*' 2>/dev/null | head -n1 || true)"
 fi
 
 [ -n "$APPIMAGE" ] || die "no AppImage was produced in dist/."

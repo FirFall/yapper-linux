@@ -83,7 +83,7 @@ fi
 log "Building: ${TARGETS[*]}"
 mkdir -p dist
 
-npx electron-builder --linux "${TARGETS[@]}" "${ARCH_FLAGS[@]}"
+npx electron-builder --linux "${TARGETS[@]}" "${ARCH_FLAGS[@]}" --publish never
 
 log "Artifacts"
 ls -lh dist/*.AppImage dist/*.deb dist/*.rpm dist/*.pkg.tar.zst dist/*.tar.gz 2>/dev/null || true

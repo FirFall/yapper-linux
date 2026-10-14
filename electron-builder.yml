@@ -35,7 +35,7 @@ linux:
       Comment: Chat, servers, voice and screen sharing
       Categories: Network;InstantMessaging;Chat;
       Keywords: chat;voice;discord;servers;yapper;
-      StartupWMClass: Yapper
+      StartupWMClass: yapper
       StartupNotify: "true"
   target:
     - target: AppImage

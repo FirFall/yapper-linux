@@ -70,7 +70,7 @@ else
   if [ ! -d node_modules ]; then
     npm install --no-audit --no-fund
   fi
-  npx electron-builder --linux AppImage --"$EB_ARCH"
+  npx electron-builder --linux AppImage --"$EB_ARCH" --publish never
   APPIMAGE="$(find dist -name 'Yapper-*.AppImage' -not -path '*/__*' 2>/dev/null | head -n1 || true)"
 fi
 

@@ -134,11 +134,19 @@ app.setName('Yapper');
 if (process.platform === 'linux') {
   // Notifications look up an icon by desktop file name. Flatpak installs
   // <app-id>.desktop, native packages install yapper.desktop.
-  const desktopName = isFlatpak ? `${process.env.FLATPAK_ID}.desktop` : 'yapper.desktop';
+  const desktopName = `${desktopFileBase()}.desktop`;
   if (typeof app.setDesktopName === 'function') app.setDesktopName(desktopName);
 
-  // Lets the dock/taskbar group the running window with its launcher icon.
-  app.commandLine.appendSwitch('class', process.env.FLATPAK_ID || 'Yapper');
+  // On Wayland this value *is* the application id, and the desktop environment
+  // matches it against the installed <name>.desktop file to pick the taskbar
+  // icon and to group windows. It has to match exactly, including case, or the
+  // launcher shows a generic icon while the app is running.
+  app.commandLine.appendSwitch('class', desktopFileBase());
+}
+
+/** Base name of the installed .desktop file, without the extension. */
+function desktopFileBase() {
+  return isFlatpak ? process.env.FLATPAK_ID : 'yapper';
 }
 
 // ---------------------------------------------------------------------------

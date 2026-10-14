@@ -51,7 +51,7 @@ jobs:
         run: npm run icons --if-present
 
       - name: Build packages
-        run: npx electron-builder --linux AppImage deb rpm pacman tar.gz --x64
+        run: npx electron-builder --linux AppImage deb rpm pacman tar.gz --x64 --publish never
 
       - name: Checksums
         run: |
@@ -113,7 +113,7 @@ jobs:
         run: npm run icons --if-present
 
       - name: Build the AppImage that the Flatpak wraps
-        run: npx electron-builder --linux AppImage --x64
+        run: npx electron-builder --linux AppImage --x64 --publish never
 
       - name: Build the Flatpak bundle
         env:

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.FirFall.Yapper</id>
+
+  <name>Yapper</name>
+  <summary>Unofficial desktop client for Yapper chat, voice and screen sharing</summary>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <description>
+    <p>
+      Yapper for Linux is an unofficial desktop client for the Yapper chat
+      service. It wraps the Yapper web app in a native window so it behaves like
+      a real desktop application instead of a browser tab.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Chat, servers, voice channels and screen sharing</li>
+      <li>Stays signed in between restarts</li>
+      <li>Desktop notifications and a system tray icon</li>
+      <li>System screen picker on Wayland and X11</li>
+      <li>Microphone and camera access handled in-app</li>
+      <li>Works on Debian, Ubuntu, Linux Mint, Fedora, Arch and more</li>
+    </ul>
+    <p>
+      This application is not affiliated with, endorsed by, or supported by
+      Yapper. Yapper and its logo belong to their respective owners.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">io.github.FirFall.Yapper.desktop</launchable>
+
+  <url type="homepage">https://www.yapper.website/</url>
+  <url type="bugtracker">https://github.com/FirFall/yapper-linux/issues</url>
+  <url type="vcs-browser">https://github.com/FirFall/yapper-linux</url>
+
+  <developer id="io.github.FirFall">
+    <name>FirFall</name>
+  </developer>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-info">moderate</content_attribute>
+  </content_rating>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>The Yapper web app</caption>
+      <image type="source">https://www.yappers.site/og.png</image>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="1.0.0" date="2026-10-14">
+      <description>
+        <p>First release: chat, servers, voice, screen sharing, tray and notifications.</p>
+      </description>
+    </release>
+  </releases>
+</component>

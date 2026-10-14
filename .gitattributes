@@ -1,0 +1,19 @@
+# Shell scripts must keep LF endings or their shebangs break when the build
+# runs on Linux CI. This is written on Windows, so be explicit about it.
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.md text eol=lf
+
+# Binary assets
+*.png binary
+*.svg text eol=lf
+*.AppImage binary
+*.flatpak binary
+*.deb binary
+*.rpm binary

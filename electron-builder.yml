@@ -1,0 +1,111 @@
+appId: io.github.FirFall.Yapper
+productName: Yapper
+copyright: Copyright (c) 2026 FirFall - unofficial Yapper desktop client
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - src/**/*
+  - package.json
+  - "!**/*.map"
+
+extraMetadata:
+  main: src/main.js
+
+# ---------------------------------------------------------------------------
+# Linux targets: AppImage (universal), deb (Mint/Debian/Ubuntu/Pop!_OS),
+# rpm (Fedora/RHEL/openSUSE), pacman (Arch/Manjaro/EndeavourOS), tar.gz.
+# The Flatpak bundle is built separately (see flatpak/ and scripts/).
+# ---------------------------------------------------------------------------
+linux:
+  executableName: yapper
+  icon: build/icons
+  category: Network
+  synopsis: Unofficial Yapper client
+  description: >-
+    Unofficial desktop client for Yapper (yapper.website).
+    Chat, servers, voice and screen sharing, in a native window with
+    tray support, desktop notifications and system screen sharing.
+  desktop:
+    entry:
+      Name: Yapper
+      GenericName: Chat Client
+      Comment: Chat, servers, voice and screen sharing
+      Categories: Network;InstantMessaging;Chat;
+      Keywords: chat;voice;discord;servers;yapper;
+      StartupWMClass: Yapper
+      StartupNotify: "true"
+  target:
+    - target: AppImage
+      arch:
+        - x64
+        - arm64
+    - target: deb
+      arch:
+        - x64
+        - arm64
+    - target: rpm
+      arch:
+        - x64
+        - arm64
+    - target: pacman
+      arch:
+        - x64
+    - target: tar.gz
+      arch:
+        - x64
+
+appImage:
+  artifactName: ${productName}-${version}-${arch}.AppImage
+
+deb:
+  artifactName: ${productName}-${version}-${arch}.deb
+  # The "|" alternatives matter: Ubuntu 24.04+, Debian 13 and Linux Mint 22
+  # renamed libgtk-3-0 -> libgtk-3-0t64 and libatspi2.0-0 -> libatspi2.0-0t64
+  # as part of the 64-bit time_t transition. Without the alternative, apt
+  # refuses to install on those releases.
+  depends:
+    - libgtk-3-0 | libgtk-3-0t64
+    - libnotify4
+    - libnss3
+    - libxss1
+    - libxtst6
+    - xdg-utils
+    - libatspi2.0-0 | libatspi2.0-0t64
+    - libuuid1
+    - libsecret-1-0
+
+rpm:
+  artifactName: ${productName}-${version}-${arch}.rpm
+  depends:
+    - gtk3
+    - libnotify
+    - nss
+    - libXScrnSaver
+    - libXtst
+    - xdg-utils
+    - at-spi2-core
+    - libuuid
+    - libsecret
+
+# NOTE: `pacman` is a sibling of `linux`, NOT nested under it.
+# electron-builder's hardcoded default pacman dependency list still points at
+# Chromium-internal libs that no longer exist as Arch packages (c-ares,
+# http-parser, libevent, libvpx, libxslt, minizip, re2, snappy), which would
+# produce a package that cannot be installed. So override it completely.
+pacman:
+  artifactName: ${productName}-${version}-${arch}.pkg.tar.zst
+  depends:
+    - gtk3
+    - libnotify
+    - nss
+    - libxss
+    - libxtst
+    - xdg-utils
+    - at-spi2-core
+    - util-linux
+    - libsecret
+
+publish: null

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Yapper
+GenericName=Chat Client
+Comment=Unofficial Yapper client - chat, servers, voice and screen sharing
+Exec=yapper %U
+Icon=io.github.FirFall.Yapper
+Terminal=false
+Categories=Network;InstantMessaging;Chat;
+Keywords=chat;voice;servers;screen share;yapper;discord;
+StartupNotify=true
+StartupWMClass=io.github.FirFall.Yapper

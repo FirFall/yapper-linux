@@ -1,0 +1,24 @@
+{
+  "name": "yapper-linux",
+  "productName": "Yapper",
+  "version": "1.0.0",
+  "description": "Unofficial Linux desktop client for Yapper (yapper.website) - chat, servers, voice and screen sharing.",
+  "license": "MIT",
+  "author": {
+    "name": "FirFall",
+    "email": "bot@gptbuddy.com"
+  },
+  "homepage": "https://www.yapper.website/",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "icons": "node scripts/make-icons.mjs",
+    "dist": "electron-builder --linux",
+    "dist:flatpak": "bash scripts/build-flatpak.sh"
+  },
+  "devDependencies": {
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3"
+  }
+}

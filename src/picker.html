@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline';"
+    />
+    <title>Choose what to share</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 14px;
+        background: #141519;
+        color: #f2f3f5;
+        font: 13px/1.4 system-ui, "Segoe UI", Roboto, sans-serif;
+        user-select: none;
+      }
+      h1 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 0 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        max-height: 340px;
+        overflow-y: auto;
+      }
+      .empty {
+        padding: 24px 0;
+        opacity: 0.7;
+      }
+      button.source {
+        display: block;
+        width: 100%;
+        padding: 6px;
+        background: #1e1f22;
+        border: 1px solid #2b2d31;
+        border-radius: 8px;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        overflow: hidden;
+      }
+      button.source:hover,
+      button.source:focus-visible {
+        border-color: #5865f2;
+        outline: none;
+      }
+      .thumb {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
+        background: #000;
+        border-radius: 4px;
+        display: block;
+      }
+      .thumb.placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        font-size: 11px;
+      }
+      .name {
+        display: block;
+        margin-top: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      footer {
+        margin-top: 14px;
+        text-align: right;
+      }
+      #cancel {
+        padding: 6px 16px;
+        background: #4e5058;
+        border: 0;
+        border-radius: 6px;
+        color: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+      #cancel:hover {
+        background: #5d6068;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Choose what to share</h1>
+    <div class="grid" id="grid">
+      <div class="empty">Looking for screens and windows…</div>
+    </div>
+    <footer><button id="cancel" type="button">Cancel</button></footer>
+
+    <script>
+      const grid = document.getElementById('grid');
+
+      function render(sources) {
+        grid.textContent = '';
+
+        if (!sources || sources.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = 'Nothing available to share.';
+          grid.appendChild(empty);
+          return;
+        }
+
+        for (const source of sources) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'source';
+          button.title = source.name;
+
+          if (source.thumb) {
+            const img = document.createElement('img');
+            img.className = 'thumb';
+            img.src = source.thumb;
+            img.alt = '';
+            button.appendChild(img);
+          } else {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'thumb placeholder';
+            placeholder.textContent = 'No preview';
+            button.appendChild(placeholder);
+          }
+
+          const label = document.createElement('span');
+          label.className = 'name';
+          label.textContent = source.name;
+          button.appendChild(label);
+
+          button.addEventListener('click', () => window.yapperPicker.pick(source.id));
+          grid.appendChild(button);
+        }
+      }
+
+      document.getElementById('cancel').addEventListener('click', () => window.yapperPicker.pick(null));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') window.yapperPicker.pick(null);
+      });
+
+      window.yapperPicker.onSources(render);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+app-id: io.github.FirFall.Yapper
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '25.08'
+command: yapper
+separate-locales: false
+
+# ---------------------------------------------------------------------------
+# This builds the universal .flatpak bundle.
+#
+# It wraps the AppImage produced by `npm run dist` (see scripts/build-flatpak.sh,
+# which builds the AppImage first and drops it next to this file as
+# yapper.AppImage).
+#
+# The org.electronjs.Electron2.BaseApp base provides zypak, libsecret and
+# libappindicator. The Electron runtime itself is bundled inside the AppImage.
+# ---------------------------------------------------------------------------
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+
+  # Camera, microphone and GPU access for voice channels, video calls and
+  # hardware accelerated rendering. There is no narrower portal for video
+  # capture on every desktop yet, so this is required for video to work.
+  - --device=all
+
+  # File downloads and drag-and-drop from chat.
+  - --filesystem=xdg-download
+  - --filesystem=xdg-pictures:ro
+  - --filesystem=xdg-videos:ro
+
+  # Desktop notifications and the system tray / status notifier.
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --own-name=org.kde.StatusNotifierItem-2-1
+
+  # Optional: keep the login token in the desktop keyring instead of on disk.
+  - --talk-name=org.freedesktop.secrets
+  - --talk-name=org.kde.kwalletd5
+  - --talk-name=org.kde.kwalletd6
+
+  # Correct mouse cursor on Wayland.
+  - --env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons
+
+cleanup:
+  - /include
+  - /lib/debug
+  - '*.a'
+  - '*.la'
+
+modules:
+  - name: yapper
+    buildsystem: simple
+    build-commands:
+      # Unpack the electron-builder AppImage. --appimage-extract needs no FUSE.
+      - chmod +x yapper.AppImage
+      - ./yapper.AppImage --appimage-extract
+
+      # Fail loudly with a useful message rather than producing a broken build
+      # if a future electron-builder release changes the AppImage layout.
+      - |
+        if [ ! -x squashfs-root/yapper ]; then
+          echo "ERROR: unexpected AppImage layout - no executable named 'yapper' at the squashfs root." >&2
+          echo "Contents:" >&2
+          ls -la squashfs-root >&2
+          exit 1
+        fi
+
+      - install -d /app/lib
+      - mv squashfs-root /app/lib/yapper
+      - install -Dm755 yapper.sh /app/bin/yapper
+
+      - install -Dm644 io.github.FirFall.Yapper.desktop /app/share/applications/io.github.FirFall.Yapper.desktop
+      - install -Dm644 io.github.FirFall.Yapper.metainfo.xml /app/share/metainfo/io.github.FirFall.Yapper.metainfo.xml
+
+      - install -Dm644 icons/16x16/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/16x16/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/24x24/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/24x24/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/32x32/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/32x32/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/48x48/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/48x48/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/64x64/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/64x64/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/128x128/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/128x128/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/256x256/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/256x256/apps/io.github.FirFall.Yapper.png
+      - install -Dm644 icons/512x512/apps/io.github.FirFall.Yapper.png /app/share/icons/hicolor/512x512/apps/io.github.FirFall.Yapper.png
+
+    sources:
+      - type: file
+        path: yapper.AppImage
+      - type: file
+        path: yapper.sh
+      - type: file
+        path: io.github.FirFall.Yapper.desktop
+      - type: file
+        path: io.github.FirFall.Yapper.metainfo.xml
+      - type: dir
+        path: icons

@@ -108,6 +108,7 @@ flatpak-builder \
   --repo="$REPO_DIR" \
   --arch="$ARCH" \
   --default-branch=stable \
+  ${DISABLE_ROFILES_FUSE:+--disable-rofiles-fuse} \
   "$BUILD_DIR" \
   "$MANIFEST"
 

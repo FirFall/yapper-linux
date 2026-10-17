@@ -113,6 +113,96 @@ function detectWayland() {
 
 applyUserFlags();
 
+// ---------------------------------------------------------------------------
+// VM / container / hardened-kernel fallbacks
+// ---------------------------------------------------------------------------
+//
+// Chromium's sandbox needs either a root-owned setuid chrome-sandbox helper or
+// unprivileged user namespaces. A VM, a container, or a hardened distribution
+// often has neither: Ubuntu 24.04 and newer block unprivileged user namespaces
+// with AppArmor, and an AppImage can never ship a setuid helper (squashfs is
+// mounted read-only and not setuid). Chromium then refuses to start with
+//
+//   The SUID sandbox helper binary was found, but is not configured correctly.
+//   Rather than run without sandboxing I'm aborting now.
+//
+// instead of degrading gracefully. Detect that case and fall back, rather than
+// aborting on the user. The sandbox is only ever turned off when there is
+// positive evidence it cannot work.
+//
+//   YAPPER_NO_SANDBOX=1  force it off (e.g. inside a container)
+//   YAPPER_NO_SANDBOX=0  force it back on
+
+/** Reads a one-value sysctl-style file, or null when it is not available. */
+function readSysctl(file) {
+  try {
+    return fs.readFileSync(file, 'utf8').trim();
+  } catch {
+    return null;
+  }
+}
+
+function sandboxIsUsable() {
+  if (process.platform !== 'linux') return true;
+
+  // Root cannot use the Chromium sandbox at all.
+  if (typeof process.getuid === 'function' && process.getuid() === 0) return false;
+
+  // Inside Flatpak we go through zypak, which sets the sandbox up itself.
+  if (isFlatpak) return true;
+
+  // A root-owned setuid helper keeps working whatever the kernel policy is.
+  try {
+    const helper = path.join(path.dirname(process.execPath), 'chrome-sandbox');
+    const stat = fs.statSync(helper);
+    if (stat.uid === 0 && (stat.mode & 0o4000) !== 0) return true;
+  } catch {
+    /* no helper next to the binary, e.g. inside an AppImage */
+  }
+
+  // Otherwise we depend on unprivileged user namespaces.
+  if (readSysctl('/proc/sys/user/max_user_namespaces') === '0') return false;
+  if (readSysctl('/proc/sys/kernel/unprivileged_userns_clone') === '0') return false;
+  if (readSysctl('/proc/sys/kernel/apparmor_restrict_unprivileged_userns') === '1') return false;
+
+  return true;
+}
+
+/** VMs and containers frequently ship a /dev/shm of only 64 MB. */
+function hasTinyDevShm() {
+  if (typeof fs.statfsSync !== 'function') return false;
+  try {
+    const stats = fs.statfsSync('/dev/shm');
+    return Number(stats.bsize) * Number(stats.blocks) < 128 * 1024 * 1024;
+  } catch {
+    return false;
+  }
+}
+
+function applyCompatibilityFlags() {
+  if (process.platform !== 'linux') return;
+
+  const forced = process.env.YAPPER_NO_SANDBOX;
+  if (forced !== '0' && (forced === '1' || !sandboxIsUsable())) {
+    app.commandLine.appendSwitch('no-sandbox');
+    if (forced !== '1') {
+      console.warn(
+        '[yapper] no usable Chromium sandbox here (VM, container or hardened ' +
+          'kernel) - starting with --no-sandbox. Set YAPPER_NO_SANDBOX=0 to override.',
+      );
+    }
+  }
+
+  // Chromium fails to allocate its shared-memory buffers on a small /dev/shm
+  // and then shows a blank window or dies with a SIGBUS. This sends them to
+  // /tmp instead. Harmless when /dev/shm is fine, so it stays conditional.
+  if (hasTinyDevShm()) {
+    app.commandLine.appendSwitch('disable-dev-shm-usage');
+  }
+}
+
+applyCompatibilityFlags();
+
 const onWayland = detectWayland();
 
 // PipeWire is the modern screen-capture path on both Wayland and X11.

@@ -145,6 +145,39 @@ For Flatpak the config lives at
 flatpak override --user --env=YAPPER_DISABLE_GPU=1 io.github.FirFall.Yapper
 ```
 
+**It refuses to start: "The SUID sandbox helper binary was found, but is not configured correctly"**
+
+Chromium's sandbox needs either a root-owned setuid `chrome-sandbox` helper or
+unprivileged user namespaces. VMs, containers and hardened kernels often have
+neither — Ubuntu 24.04+ blocks unprivileged user namespaces with AppArmor, and
+an AppImage can never ship a setuid helper — in which case Chromium aborts
+instead of degrading. The app detects this and falls back automatically. Force
+it yourself with:
+
+```bash
+YAPPER_NO_SANDBOX=1 yapper
+# or, inside the sandbox:
+flatpak override --user --env=YAPPER_NO_SANDBOX=1 io.github.FirFall.Yapper
+```
+
+**The window is blank, or it dies with a SIGBUS/SIGSEGV on start**
+
+`/dev/shm` is too small — 64 MB is the default in containers and in many VMs.
+The app switches Chromium's shared memory to `/tmp` automatically when `/dev/shm`
+is under 128 MB, but you can force it:
+
+```bash
+echo "disable-dev-shm-usage" >> ~/.config/yapper/flags.conf
+```
+
+**Running inside a VM and getting artefacts, tearing or very slow repaints**
+
+The VM has no 3D acceleration, so software rendering is the sane option:
+
+```bash
+echo "no-gpu" >> ~/.config/yapper/flags.conf
+```
+
 **Screen sharing shows the whole screen instead of a window**
 
 Make sure `xdg-desktop-portal` and a backend for your desktop are installed:
